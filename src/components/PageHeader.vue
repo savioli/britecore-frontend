@@ -5,9 +5,11 @@
     >
       <div class="flex items-center space-x-5">
         <div>
-          <div class="text-2xl font-bold text-gray-900">Risk Form</div>
+          <div class="text-2xl font-bold text-gray-900">
+            {{ title }}
+          </div>
           <span class="text-sm font-medium text-gray-500">
-            Description
+            {{ description }}
           </span>
         </div>
       </div>
@@ -17,6 +19,16 @@
 
 <script>
 export default {
-  name: "PageHeader"
+  name: "PageHeader",
+  props: {
+    title: {
+      type: String,
+      default: ""
+    },
+    description: {
+      type: String,
+      default: ""
+    }
+  }
 };
 </script>
