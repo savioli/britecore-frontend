@@ -4,7 +4,7 @@
     <section
       class="min-w-0 flex-1 h-full flex flex-col overflow-hidden lg:order-last"
     >
-      <div class="overflow-hidden bg-gray-100">
+      <div class="overflow-hidden bg-gray-100 lg:px-6">
         <!-- Main Content -->
         <insurance-application-form></insurance-application-form>
         <!-- End Main Content -->

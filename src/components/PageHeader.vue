@@ -1,8 +1,6 @@
 <template>
   <div class="py-6">
-    <div
-      class="md:flex md:items-center md:justify-between md:space-x-5 lg:px-6"
-    >
+    <div class="md:flex md:items-center md:justify-between md:space-x-5">
       <div class="flex items-center space-x-5">
         <div>
           <div class="text-2xl font-bold text-gray-900">
