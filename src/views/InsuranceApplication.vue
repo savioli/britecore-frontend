@@ -6,6 +6,7 @@
     >
       <div class="overflow-hidden bg-gray-100">
         <!-- Main Content -->
+        <insurance-application-form></insurance-application-form>
         <!-- End Main Content -->
       </div>
     </section>
@@ -25,8 +26,9 @@
 </template>
 
 <script>
+import InsuranceApplicationForm from "../components/InsuranceApplicationForm";
 export default {
   name: "InsuranceApplication",
-  components: {}
+  components: { InsuranceApplicationForm }
 };
 </script>
