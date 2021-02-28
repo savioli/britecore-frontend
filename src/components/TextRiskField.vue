@@ -1,19 +1,19 @@
 <template>
   <div class="md:flex">
     <div class="md:w-full">
-      <span class="flex-grow flex flex-col mb-3">
+      <span class="flex-grow flex flex-col">
         <span class="text-sm font-medium text-gray-900">{{ name }}</span>
         <span class="text-sm text-gray-500">{{ description }}</span>
       </span>
 
       <input
         v-model="value"
-        class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
+        class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4"
         type="text"
         placeholder=""
       />
 
-      <div class="ml-1 text-xs text-red-700">{{ errorMessage }}</div>
+      <!-- <div class="ml-1 text-xs text-red-700">{{ errorMessage }}</div> -->
     </div>
   </div>
 </template>
