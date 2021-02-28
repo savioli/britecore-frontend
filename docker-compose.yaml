@@ -8,6 +8,8 @@ services:
     build: 
       context: .
       dockerfile: ./docker/vue/Dockerfile
+    env_file:
+      - ./docker/vue/vue.dev.env
     command: npm run serve
     ports:
       - "3000:3000"
