@@ -13,7 +13,7 @@
       <div class="mt-1 relative">
         <select
           v-model="selectedRiskId"
-          class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm"
+          class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm"
         >
           <option value="0">Please select a Risk</option>
           <option v-for="risk in risks" :key="risk.id" v-bind:value="risk.id">
@@ -59,6 +59,7 @@
           :name="field.name"
           :description="field.description"
           :required="field.required"
+          :options="field.options"
           error-message=""
           class="my-3"
         ></enum-risk-field>
@@ -75,10 +76,7 @@ import DateRiskField from "../components/DateRiskField.vue";
 import EnumRiskField from "../components/EnumRiskField.vue";
 import RiskService from "../services/RiskService.js";
 
-const NOT_SELECTED = 0;
-
 export default {
-  NOT_SELECTED,
   name: "InsuranceApplicationForm",
   components: {
     PageHeader,
@@ -89,7 +87,7 @@ export default {
   },
   data() {
     return {
-      selectedRiskId: NOT_SELECTED,
+      selectedRiskId: 0,
       risk: {},
       risks: []
     };
@@ -111,7 +109,7 @@ export default {
   },
   watch: {
     selectedRiskId: function() {
-      if (this.selectedRiskId == NOT_SELECTED) {
+      if (this.selectedRiskId == 0) {
         this.risk = {};
       } else {
         this.getRisk();
