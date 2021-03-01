@@ -14,12 +14,34 @@
         <span class="text-sm text-gray-500">{{ description }}</span>
       </span>
 
-      <input
-        v-model="value"
-        class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4"
-        type="text"
-        placeholder=""
-      />
+      <div class="bg-white rounded-md -space-y-px">
+        <div v-for="option in options" :key="option.id">
+          <div class="relative border border-gray-200 p-4 flex">
+            <div class="flex items-center">
+              <input
+                :id="'option_' + option.id"
+                v-model="value"
+                :value="option.id"
+                :name="'option_' + option.id"
+                type="radio"
+                class="focus:ring-indigo-500 h-4 w-4 text-black cursor-pointer border-gray-300"
+              />
+            </div>
+            <label
+              :for="'option_' + option.id"
+              class="ml-3 flex flex-col cursor-pointer"
+            >
+              <span class="block text-sm font-medium">
+                {{ option.name }}
+              </span>
+
+              <span class="block text-sm">
+                {{ option.description }}
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
 
       <div class="ml-1 text-xs text-red-700">{{ errorMessage }}</div>
     </div>
@@ -46,6 +68,12 @@ export default {
     errorMessage: {
       type: String,
       default: ""
+    },
+    options: {
+      type: [Array],
+      default: function() {
+        return [];
+      }
     }
   },
   data() {
