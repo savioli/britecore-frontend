@@ -53,6 +53,16 @@
           class="my-3"
         ></date-risk-field>
       </div>
+
+      <div v-if="field.type === 'enum'">
+        <enum-risk-field
+          :name="field.name"
+          :description="field.description"
+          :required="field.required"
+          error-message=""
+          class="my-3"
+        ></enum-risk-field>
+      </div>
     </div>
   </div>
 </template>
@@ -62,6 +72,7 @@ import PageHeader from "../components/PageHeader.vue";
 import TextRiskField from "../components/TextRiskField.vue";
 import NumberRiskField from "../components/NumberRiskField.vue";
 import DateRiskField from "../components/DateRiskField.vue";
+import EnumRiskField from "../components/EnumRiskField.vue";
 import RiskService from "../services/RiskService.js";
 
 const NOT_SELECTED = 0;
@@ -69,7 +80,13 @@ const NOT_SELECTED = 0;
 export default {
   NOT_SELECTED,
   name: "InsuranceApplicationForm",
-  components: { PageHeader, TextRiskField, NumberRiskField, DateRiskField },
+  components: {
+    PageHeader,
+    TextRiskField,
+    NumberRiskField,
+    DateRiskField,
+    EnumRiskField
+  },
   data() {
     return {
       selectedRiskId: NOT_SELECTED,
