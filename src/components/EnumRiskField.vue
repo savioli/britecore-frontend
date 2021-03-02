@@ -31,11 +31,11 @@
               :for="'option_' + option.id"
               class="ml-3 flex flex-col cursor-pointer"
             >
-              <span class="block text-sm font-medium">
+              <span class="text-sm font-medium text-gray-900">
                 {{ option.name }}
               </span>
 
-              <span class="block text-sm">
+              <span class="block text-sm text-gray-500">
                 {{ option.description }}
               </span>
             </label>
