@@ -5,23 +5,44 @@
       description="Insurance Application Form for collecting data related to the risk"
     ></page-header>
 
-    <div>
-      <span class="flex-grow flex flex-col">
-        <span class="text-sm font-medium text-gray-900">Risk Type</span>
-      </span>
+    <template v-if="selectedRiskId == 0">
+      <div>
+        <span class="flex-grow flex flex-col">
+          <span class="text-sm font-medium text-gray-900">Risk Type</span>
+        </span>
 
-      <div class="mt-1 relative">
-        <select
-          v-model="selectedRiskId"
-          class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm"
-        >
-          <option value="0">Please select a Risk</option>
-          <option v-for="risk in risks" :key="risk.id" v-bind:value="risk.id">
-            {{ risk.name }}
-          </option>
-        </select>
+        <div class="mt-1 relative">
+          <select
+            v-model="selectedRiskId"
+            class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm mb-3"
+          >
+            <option value="0">Please select a Risk</option>
+            <option v-for="risk in risks" :key="risk.id" v-bind:value="risk.id">
+              {{ risk.name }}
+            </option>
+          </select>
+        </div>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <div class=" flex">
+        <div class="md:flex md:items-center md:justify-between">
+          <risk-description
+            title="Selected Risk"
+            :category="risk?.risk_category?.name"
+            :description="risk?.risk_category?.description"
+          ></risk-description>
+
+          <div
+            @click="resetRisk"
+            type="button"
+            class="ml-4 mt-1 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-3 px-5 shadow-md text-sm font-medium cursor-pointer"
+          >
+            Select Another
+          </div>
+        </div>
+      </div>
+    </template>
 
     <div v-for="field in risk.risk_fields" :key="field.id">
       <div v-if="field.type === 'text'">
@@ -74,6 +95,7 @@ import TextRiskField from "../components/TextRiskField.vue";
 import NumberRiskField from "../components/NumberRiskField.vue";
 import DateRiskField from "../components/DateRiskField.vue";
 import EnumRiskField from "../components/EnumRiskField.vue";
+import RiskDescription from "../components/RiskDescription.vue";
 import RiskService from "../services/RiskService.js";
 
 export default {
@@ -83,7 +105,8 @@ export default {
     TextRiskField,
     NumberRiskField,
     DateRiskField,
-    EnumRiskField
+    EnumRiskField,
+    RiskDescription
   },
   data() {
     return {
@@ -96,6 +119,9 @@ export default {
     this.getRisks();
   },
   methods: {
+    resetRisk() {
+      this.selectedRiskId = 0;
+    },
     async getRisks() {
       RiskService.getRisks().then(risks => {
         this.risks = risks;
