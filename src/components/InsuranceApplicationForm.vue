@@ -5,6 +5,14 @@
       description="Insurance Application Form for collecting data related to the risk"
     ></page-header>
 
+    <alert
+      v-if="hasAlert === true"
+      :message="alert.message"
+      :description="alert.description"
+      :type="'danger'"
+      class="mb-4"
+    ></alert>
+
     <template v-if="selectedRiskId == 0">
       <span class="flex-grow flex flex-col">
         <span class="text-sm font-medium text-gray-900">Search a Risk</span>
@@ -35,7 +43,7 @@
           </div>
         </div>
 
-        <span class="flex-grow flex flex-col mb-2">
+        <span v-if="hasAlert === false" class="flex-grow flex flex-col mb-2">
           <span class="text-sm font-medium text-gray-900">Choose a Risk</span>
         </span>
 
@@ -67,6 +75,7 @@
       <div class="flex">
         <div class="md:flex md:items-center md:justify-between">
           <risk-description
+            v-if="!hasAlert"
             title="Selected Risk"
             :category="risk?.risk_category?.name"
             :description="risk?.risk_category?.description"
@@ -75,7 +84,8 @@
           <div
             @click="resetRisk"
             type="button"
-            class="ml-4 mt-1 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-3 px-5 shadow-md text-sm font-medium cursor-pointer"
+            :class="{ '-ml-0': hasAlert }"
+            class="-ml ml-4 mt-1 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-3 px-5 shadow-md text-sm font-medium cursor-pointer"
           >
             Select Another
           </div>
@@ -136,6 +146,7 @@ import DateRiskField from "../components/DateRiskField.vue";
 import EnumRiskField from "../components/EnumRiskField.vue";
 import RiskDescription from "../components/RiskDescription.vue";
 import RiskService from "../services/RiskService.js";
+import Alert from "../components/Alert.vue";
 
 export default {
   name: "InsuranceApplicationForm",
@@ -145,14 +156,17 @@ export default {
     NumberRiskField,
     DateRiskField,
     EnumRiskField,
-    RiskDescription
+    RiskDescription,
+    Alert
   },
   data() {
     return {
       search: "",
       selectedRiskId: 0,
       risk: {},
-      risks: []
+      risks: [],
+      hasAlert: false,
+      alert: {}
     };
   },
   created() {
@@ -166,14 +180,44 @@ export default {
       this.selectedRiskId = 0;
     },
     async getRisks() {
-      RiskService.getRisks().then(risks => {
-        this.risks = risks;
-      });
+      RiskService.getRisks()
+        .then(risks => {
+          this.risks = risks;
+        })
+        .catch(error => {
+          this.hasAlert = true;
+
+          this.alert = {
+            message: "An error has occurred",
+            description:
+              "An error has occurred while trying to retrieve the list of risks",
+            type: "danger",
+            rawError: error
+          };
+        })
+        .then(function() {
+          this.resetRisk();
+        });
     },
     async getRisk() {
-      RiskService.getRiskById(this.selectedRiskId).then(risk => {
-        this.risk = risk;
-      });
+      RiskService.getRiskById(this.selectedRiskId)
+        .then(risk => {
+          this.risk = risk;
+        })
+        .catch(error => {
+          this.hasAlert = true;
+
+          this.alert = {
+            message: "An error has occurred",
+            description:
+              "An error has occurred while trying to retrieve the selected risk",
+            type: "danger",
+            rawError: error
+          };
+        })
+        .then(function() {
+          this.resetRisk();
+        });
     }
   },
   watch: {
