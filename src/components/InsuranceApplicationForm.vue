@@ -1,31 +1,70 @@
 <template>
-  <div>
+  <div class="mb-96">
     <page-header
       title="Insurance Application Form"
       description="Insurance Application Form for collecting data related to the risk"
     ></page-header>
 
     <template v-if="selectedRiskId == 0">
+      <span class="flex-grow flex flex-col">
+        <span class="text-sm font-medium text-gray-900">Search a Risk</span>
+      </span>
+
       <div>
-        <span class="flex-grow flex flex-col">
-          <span class="text-sm font-medium text-gray-900">Risk Type</span>
+        <div class="flex flex-col mb-2">
+          <div class="w-full flex flex-col items-center">
+            <div class="w-full">
+              <div class="flex flex-col items-center relative">
+                <div class="w-full">
+                  <div
+                    class="my-2 p-1 bg-white flex border border-gray-200 rounded"
+                  >
+                    <div class="flex flex-auto flex-wrap"></div>
+                    <input
+                      v-model="search"
+                      placeholder="Search by Risk Name"
+                      class="p-1 px-2 appearance-none outline-none w-full text-gray-800"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="bg-white top-full w-full lef-0 overflow-y-auto"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <span class="flex-grow flex flex-col mb-2">
+          <span class="text-sm font-medium text-gray-900">Choose a Risk</span>
         </span>
 
-        <div class="mt-1 relative">
-          <select
-            v-model="selectedRiskId"
-            class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm mb-3"
+        <div class="bg-white rounded-md -space-y-px">
+          <div
+            v-for="risk in filteredList"
+            :key="risk.id"
+            v-bind:value="risk.id"
           >
-            <option value="0">Please select a Risk</option>
-            <option v-for="risk in risks" :key="risk.id" v-bind:value="risk.id">
-              {{ risk.name }}
-            </option>
-          </select>
+            <div
+              @click="setSelectedRiskId(risk.id)"
+              class="relative border border-gray-200 p-4 flex cursor-pointer hover:bg-gray-50"
+            >
+              <div class="ml-0 flex flex-col">
+                <span class="text-sm font-medium text-gray-900">
+                  {{ risk.name }}
+                </span>
+
+                <span class="block text-sm text-gray-500">
+                  {{ risk.risk_category.description }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </template>
     <template v-else>
-      <div class=" flex">
+      <div class="flex">
         <div class="md:flex md:items-center md:justify-between">
           <risk-description
             title="Selected Risk"
@@ -110,6 +149,7 @@ export default {
   },
   data() {
     return {
+      search: "",
       selectedRiskId: 0,
       risk: {},
       risks: []
@@ -119,6 +159,9 @@ export default {
     this.getRisks();
   },
   methods: {
+    setSelectedRiskId(id) {
+      this.selectedRiskId = id;
+    },
     resetRisk() {
       this.selectedRiskId = 0;
     },
@@ -140,6 +183,13 @@ export default {
       } else {
         this.getRisk();
       }
+    }
+  },
+  computed: {
+    filteredList() {
+      return this.risks.filter(risk => {
+        return risk.name.toLowerCase().includes(this.search.toLowerCase());
+      });
     }
   }
 };
