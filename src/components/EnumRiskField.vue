@@ -24,6 +24,7 @@
                 :value="option.id"
                 :name="'option_' + option.id"
                 type="radio"
+                :checked="option.checked"
                 class="focus:ring-indigo-500 h-4 w-4 text-black cursor-pointer border-gray-300"
               />
             </div>
