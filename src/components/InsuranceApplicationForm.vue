@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-96">
+  <div class="h-auto">
     <page-header
       title="Insurance Application Form"
       description="Insurance Application Form for collecting data related to the risk"
@@ -63,7 +63,7 @@
                 </span>
 
                 <span class="block text-sm text-gray-500">
-                  {{ risk.risk_category.description }}
+                  {{ risk.description }}
                 </span>
               </div>
             </div>
@@ -77,8 +77,8 @@
           <risk-description
             v-if="!hasAlert"
             title="Selected Risk"
-            :category="risk?.risk_category?.name"
-            :description="risk?.risk_category?.description"
+            :category="risk?.category?.name"
+            :description="risk?.category?.description"
           ></risk-description>
 
           <div
@@ -93,7 +93,7 @@
       </div>
     </template>
 
-    <div v-for="field in risk.risk_fields" :key="field.id">
+    <div v-for="field in risk.fields" :key="field.id">
       <div v-if="field.type === 'text'">
         <text-risk-field
           :name="field.name"
@@ -194,9 +194,6 @@ export default {
             type: "danger",
             rawError: error
           };
-        })
-        .then(function() {
-          this.resetRisk();
         });
     },
     async getRisk() {
@@ -214,9 +211,6 @@ export default {
             type: "danger",
             rawError: error
           };
-        })
-        .then(function() {
-          this.resetRisk();
         });
     }
   },
