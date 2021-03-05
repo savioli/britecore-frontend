@@ -9,6 +9,8 @@ services:
     build: 
       context: .
       dockerfile: ./deploy/vue/Dockerfile
+    env_file:
+      - ./deploy/vue/vue.prod.env
     ports:
       - "3000:3000"
     deploy:

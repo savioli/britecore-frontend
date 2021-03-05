@@ -1,27 +1,97 @@
 <template>
-  <div>
+  <div class="mb-96">
     <page-header
       title="Insurance Application Form"
       description="Insurance Application Form for collecting data related to the risk"
     ></page-header>
 
-    <div>
+    <alert
+      v-if="hasAlert === true"
+      :message="alert.message"
+      :description="alert.description"
+      :type="'danger'"
+      class="mb-4"
+    ></alert>
+
+    <template v-if="selectedRiskId == 0">
       <span class="flex-grow flex flex-col">
-        <span class="text-sm font-medium text-gray-900">Risk Type</span>
+        <span class="text-sm font-medium text-gray-900">Search a Risk</span>
       </span>
 
-      <div class="mt-1 relative">
-        <select
-          v-model="selectedRiskId"
-          class="relative w-full bg-white border border-gray-300 rounded-md pl-3 pr-10 py-4 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm"
-        >
-          <option value="0">Please select a Risk</option>
-          <option v-for="risk in risks" :key="risk.id" v-bind:value="risk.id">
-            {{ risk.name }}
-          </option>
-        </select>
+      <div>
+        <div class="flex flex-col mb-2">
+          <div class="w-full flex flex-col items-center">
+            <div class="w-full">
+              <div class="flex flex-col items-center relative">
+                <div class="w-full">
+                  <div
+                    class="my-2 p-1 bg-white flex border border-gray-200 rounded"
+                  >
+                    <div class="flex flex-auto flex-wrap"></div>
+                    <input
+                      v-model="search"
+                      placeholder="Search by Risk Name"
+                      class="p-1 px-2 appearance-none outline-none w-full text-gray-800"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="bg-white top-full w-full lef-0 overflow-y-auto"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <span v-if="hasAlert === false" class="flex-grow flex flex-col mb-2">
+          <span class="text-sm font-medium text-gray-900">Choose a Risk</span>
+        </span>
+
+        <div class="bg-white rounded-md -space-y-px">
+          <div
+            v-for="risk in filteredList"
+            :key="risk.id"
+            v-bind:value="risk.id"
+          >
+            <div
+              @click="setSelectedRiskId(risk.id)"
+              class="relative border border-gray-200 p-4 flex cursor-pointer hover:bg-gray-50"
+            >
+              <div class="ml-0 flex flex-col">
+                <span class="text-sm font-medium text-gray-900">
+                  {{ risk.name }}
+                </span>
+
+                <span class="block text-sm text-gray-500">
+                  {{ risk.risk_category.description }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <div class="flex">
+        <div class="md:flex md:items-center md:justify-between">
+          <risk-description
+            v-if="!hasAlert"
+            title="Selected Risk"
+            :category="risk?.risk_category?.name"
+            :description="risk?.risk_category?.description"
+          ></risk-description>
+
+          <div
+            @click="resetRisk"
+            type="button"
+            :class="{ '-ml-0': hasAlert }"
+            class="-ml ml-4 mt-1 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-3 px-5 shadow-md text-sm font-medium cursor-pointer"
+          >
+            Select Another
+          </div>
+        </div>
+      </div>
+    </template>
 
     <div v-for="field in risk.risk_fields" :key="field.id">
       <div v-if="field.type === 'text'">
@@ -74,7 +144,9 @@ import TextRiskField from "../components/TextRiskField.vue";
 import NumberRiskField from "../components/NumberRiskField.vue";
 import DateRiskField from "../components/DateRiskField.vue";
 import EnumRiskField from "../components/EnumRiskField.vue";
+import RiskDescription from "../components/RiskDescription.vue";
 import RiskService from "../services/RiskService.js";
+import Alert from "../components/Alert.vue";
 
 export default {
   name: "InsuranceApplicationForm",
@@ -83,28 +155,69 @@ export default {
     TextRiskField,
     NumberRiskField,
     DateRiskField,
-    EnumRiskField
+    EnumRiskField,
+    RiskDescription,
+    Alert
   },
   data() {
     return {
+      search: "",
       selectedRiskId: 0,
       risk: {},
-      risks: []
+      risks: [],
+      hasAlert: false,
+      alert: {}
     };
   },
   created() {
     this.getRisks();
   },
   methods: {
+    setSelectedRiskId(id) {
+      this.selectedRiskId = id;
+    },
+    resetRisk() {
+      this.selectedRiskId = 0;
+    },
     async getRisks() {
-      RiskService.getRisks().then(risks => {
-        this.risks = risks;
-      });
+      RiskService.getRisks()
+        .then(risks => {
+          this.risks = risks;
+        })
+        .catch(error => {
+          this.hasAlert = true;
+
+          this.alert = {
+            message: "An error has occurred",
+            description:
+              "An error has occurred while trying to retrieve the list of risks",
+            type: "danger",
+            rawError: error
+          };
+        })
+        .then(function() {
+          this.resetRisk();
+        });
     },
     async getRisk() {
-      RiskService.getRiskById(this.selectedRiskId).then(risk => {
-        this.risk = risk;
-      });
+      RiskService.getRiskById(this.selectedRiskId)
+        .then(risk => {
+          this.risk = risk;
+        })
+        .catch(error => {
+          this.hasAlert = true;
+
+          this.alert = {
+            message: "An error has occurred",
+            description:
+              "An error has occurred while trying to retrieve the selected risk",
+            type: "danger",
+            rawError: error
+          };
+        })
+        .then(function() {
+          this.resetRisk();
+        });
     }
   },
   watch: {
@@ -114,6 +227,13 @@ export default {
       } else {
         this.getRisk();
       }
+    }
+  },
+  computed: {
+    filteredList() {
+      return this.risks.filter(risk => {
+        return risk.name.toLowerCase().includes(this.search.toLowerCase());
+      });
     }
   }
 };

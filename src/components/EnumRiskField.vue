@@ -24,6 +24,7 @@
                 :value="option.id"
                 :name="'option_' + option.id"
                 type="radio"
+                :checked="option.checked"
                 class="focus:ring-indigo-500 h-4 w-4 text-black cursor-pointer border-gray-300"
               />
             </div>
@@ -31,11 +32,11 @@
               :for="'option_' + option.id"
               class="ml-3 flex flex-col cursor-pointer"
             >
-              <span class="block text-sm font-medium">
+              <span class="text-sm font-medium text-gray-900">
                 {{ option.name }}
               </span>
 
-              <span class="block text-sm">
+              <span class="block text-sm text-gray-500">
                 {{ option.description }}
               </span>
             </label>
