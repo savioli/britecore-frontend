@@ -1,5 +1,5 @@
 <template>
-  <div class="h-auto">
+  <div class="h-auto mb-24">
     <page-header
       title="Insurance Application Form"
       description="Insurance Application Form for collecting data related to the risk"
@@ -153,7 +153,7 @@
 
     <div
       v-if="selectedRiskId !== 0"
-      class="md:flex md:items-center md:justify-between"
+      class="md:flex md:items-center md:justify-between mt-8"
     >
       <div class="flex-1 min-w-0"></div>
       <div class="mt-4 flex md:mt-0 md:ml-4">

@@ -17,7 +17,7 @@
       <input
         @keypress="onlyNumber"
         v-model="value"
-        class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4"
+        class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 focus:outline-none focus:border-gray-300 focus:shadow-sm"
         placeholder=""
         type="text"
       />
