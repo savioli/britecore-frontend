@@ -19,8 +19,8 @@ services:
           cpus: "0.5"
           memory: 512M
     networks:
-      - savioli-network
+      - savioli
 
 networks:
-  savioli-network:
+  savioli:
     driver: bridge
