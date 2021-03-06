@@ -15,20 +15,37 @@
       </span>
 
       <input
-        v-model="value"
+        @focus="displayDatePicker"
+        @click="displayDatePicker"
+        v-model="date"
         class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4"
         type="text"
         placeholder=""
+        :readonly="true"
       />
 
       <div class="ml-1 text-xs text-red-700">{{ errorMessage }}</div>
     </div>
   </div>
-</template>
 
+  <DatePicker
+    v-click-away="onClickAway"
+    v-if="visible"
+    class="relative z-50 mt-2"
+    :model-config="modelConfig"
+    v-model="date"
+  />
+</template>
 <script>
+import { DatePicker } from "v-calendar";
+import { mixin as VueClickAway } from "vue3-click-away";
+
 export default {
+  mixins: [VueClickAway],
   name: "DateRiskField",
+  components: {
+    DatePicker
+  },
   props: {
     name: {
       type: String,
@@ -45,12 +62,35 @@ export default {
     },
     errorMessage: {
       type: String,
-      default: ""
+      default: "",
+      inputValue: ""
+    }
+  },
+  methods: {
+    displayDatePicker(e) {
+      this.show(e);
+    },
+    show(e) {
+      e.stopPropagation();
+      this.visible = true;
+    },
+    hide(e) {
+      e.stopPropagation();
+      this.visible = false;
+    },
+    onClickAway(e) {
+      this.hide(e);
     }
   },
   data() {
     return {
-      value: ""
+      value: "",
+      date: "",
+      visible: false,
+      modelConfig: {
+        type: "string",
+        mask: "YYYY-MM-DD"
+      }
     };
   }
 };

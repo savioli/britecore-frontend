@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-96">
+  <div class="h-auto">
     <page-header
       title="Insurance Application Form"
       description="Insurance Application Form for collecting data related to the risk"
@@ -63,7 +63,7 @@
                 </span>
 
                 <span class="block text-sm text-gray-500">
-                  {{ risk.risk_category.description }}
+                  {{ risk.description }}
                 </span>
               </div>
             </div>
@@ -77,8 +77,8 @@
           <risk-description
             v-if="!hasAlert"
             title="Selected Risk"
-            :category="risk?.risk_category?.name"
-            :description="risk?.risk_category?.description"
+            :category="risk?.category?.name"
+            :description="risk?.category?.description"
           ></risk-description>
 
           <div
@@ -91,9 +91,24 @@
           </div>
         </div>
       </div>
+
+      <div class="py-0">
+        <div class="md:flex md:items-center md:justify-between md:space-x-5">
+          <div class="flex items-center space-x-5">
+            <div>
+              <div class="text-2xl font-bold text-gray-900">
+                {{ risk?.name }}
+              </div>
+              <span class="text-sm font-medium text-gray-500">
+                {{ risk?.description }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </template>
 
-    <div v-for="field in risk.risk_fields" :key="field.id">
+    <div v-for="field in risk.fields" :key="field.id">
       <div v-if="field.type === 'text'">
         <text-risk-field
           :name="field.name"
@@ -133,6 +148,28 @@
           error-message=""
           class="my-3"
         ></enum-risk-field>
+      </div>
+    </div>
+
+    <div
+      v-if="selectedRiskId !== 0"
+      class="md:flex md:items-center md:justify-between"
+    >
+      <div class="flex-1 min-w-0"></div>
+      <div class="mt-4 flex md:mt-0 md:ml-4">
+        <div
+          type="button"
+          class="inline-flex items-center bg-gray-400 leading-none text-white rounded-full py-4 px-8 shadow-md text-sm font-medium cursor-pointer"
+        >
+          Cancel
+        </div>
+
+        <div
+          type="button"
+          class="ml-4 px-6 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-4 px-8 shadow-md text-sm font-medium cursor-pointer"
+        >
+          Next
+        </div>
       </div>
     </div>
   </div>
@@ -194,9 +231,6 @@ export default {
             type: "danger",
             rawError: error
           };
-        })
-        .then(function() {
-          this.resetRisk();
         });
     },
     async getRisk() {
@@ -214,9 +248,6 @@ export default {
             type: "danger",
             rawError: error
           };
-        })
-        .then(function() {
-          this.resetRisk();
         });
     }
   },
