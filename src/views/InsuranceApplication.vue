@@ -2,7 +2,7 @@
   <main class="min-w-0 flex-1 border-t border-gray-200 lg:flex bg-gray-100">
     <!-- Main Area -->
     <section class="min-w-0 flex-1 flex flex-col overflow-hidden lg:order-last">
-      <div class="overflow-hidden  lg:px-6">
+      <div class="overflow-hidden md:px-6 sm:px-5  px-5">
         <!-- Main Content -->
         <insurance-application-form></insurance-application-form>
         <!-- End Main Content -->

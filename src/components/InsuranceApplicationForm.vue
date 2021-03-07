@@ -6,10 +6,10 @@
     ></page-header>
 
     <alert
-      v-if="hasAlert === true"
-      :message="alert.message"
-      :description="alert.description"
-      :type="'danger'"
+      v-if="hasAlert"
+      :message="alert?.message"
+      :description="alert?.description"
+      :type="alert?.type"
       class="mb-4"
     ></alert>
 
@@ -43,7 +43,7 @@
           </div>
         </div>
 
-        <span v-if="hasAlert === false" class="flex-grow flex flex-col mb-2">
+        <span v-if="hasAlert" class="flex-grow flex flex-col mb-2">
           <span class="text-sm font-medium text-gray-900">Choose a Risk</span>
         </span>
 
@@ -68,26 +68,56 @@
               </div>
             </div>
           </div>
+
+          <div v-if="filteredList.length == 0">
+            <div
+              @click="setSelectedRiskId(risk.id)"
+              class="relative border border-gray-200 p-4 flex cursor-pointer hover:bg-gray-50"
+            >
+              <div class="ml-0 flex flex-col">
+                <span class="text-sm font-medium text-gray-900">
+                  Nothing found
+                </span>
+
+                <span class="block text-sm text-gray-500">
+                  No results were found for your search by:<span
+                    class="ml-0.5 font-semibold"
+                    >{{ search.trim() }}</span
+                  >
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </template>
     <template v-else>
       <div class="flex">
-        <div class="md:flex md:items-center md:justify-between">
+        <div
+          v-if="!hasAlert"
+          class="md:flex md:items-center md:justify-between"
+        >
           <risk-description
-            v-if="!hasAlert"
+            class="mr-6"
             title="Selected Risk"
             :category="risk?.category?.name"
             :description="risk?.category?.description"
           ></risk-description>
 
           <div
-            @click="resetRisk"
-            type="button"
+            class="mt-1 sm:mb-5 md:mb-0 lg:mb-0 xl:mb-0 2xl:mb-0 mb-5"
             :class="{ '-ml-0': hasAlert }"
-            class="-ml ml-4 mt-1 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-3 px-5 shadow-md text-sm font-medium cursor-pointer"
           >
-            Select Another
+            <div
+              @click="resetRisk"
+              class="cursor-pointer bg-gray-700 inline-flex items-cente leading-none text-gray-50 rounded-full p-2 shadow text-teal text-sm"
+            >
+              <span
+                class="inline-flex px-4 p-0.5 text-sm font-medium tracking-wider"
+              >
+                Select Another Risk
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -96,10 +126,10 @@
         <div class="md:flex md:items-center md:justify-between md:space-x-5">
           <div class="flex items-center space-x-5">
             <div>
-              <div class="text-2xl font-bold text-gray-900">
+              <div class="ml-1 text-2xl font-bold text-gray-900">
                 {{ risk?.name }}
               </div>
-              <span class="text-sm font-medium text-gray-500">
+              <span class="ml-1 text-sm font-medium text-gray-500">
                 {{ risk?.description }}
               </span>
             </div>
@@ -107,6 +137,15 @@
         </div>
       </div>
     </template>
+
+    <span
+      v-if="selectedRiskId === 0"
+      class="ml-2 block text-sm text-gray-500 mt-4"
+    >
+      Showing
+      <span class="mx-0.5 font-semibold">{{ filteredList.length }}</span> of
+      <span class="mx-0.5 font-semibold">{{ risks.length }}</span> Risks.
+    </span>
 
     <div v-for="field in risk.fields" :key="field.id">
       <div v-if="field.type === 'text'">
@@ -158,6 +197,7 @@
       <div class="flex-1 min-w-0"></div>
       <div class="mt-4 flex md:mt-0 md:ml-4">
         <div
+          @click="resetRisk"
           type="button"
           class="inline-flex items-center bg-gray-400 leading-none text-white rounded-full py-4 px-8 shadow-md text-sm font-medium cursor-pointer"
         >
@@ -165,6 +205,7 @@
         </div>
 
         <div
+          @click.prevent="notImplementedAlert"
           type="button"
           class="ml-4 px-6 inline-flex items-center bg-gray-600 leading-none text-white rounded-full py-4 px-8 shadow-md text-sm font-medium cursor-pointer"
         >
@@ -184,9 +225,12 @@ import EnumRiskField from "../components/EnumRiskField.vue";
 import RiskDescription from "../components/RiskDescription.vue";
 import RiskService from "../services/RiskService.js";
 import Alert from "../components/Alert.vue";
+import { mixin as VueClickAway } from "vue3-click-away";
+import store from "../store/index";
 
 export default {
   name: "InsuranceApplicationForm",
+  mixins: [VueClickAway],
   components: {
     PageHeader,
     TextRiskField,
@@ -201,9 +245,7 @@ export default {
       search: "",
       selectedRiskId: 0,
       risk: {},
-      risks: [],
-      hasAlert: false,
-      alert: {}
+      risks: []
     };
   },
   created() {
@@ -212,9 +254,11 @@ export default {
   methods: {
     setSelectedRiskId(id) {
       this.selectedRiskId = id;
+      store.commit("hideAlert");
     },
     resetRisk() {
       this.selectedRiskId = 0;
+      store.commit("hideAlert");
     },
     async getRisks() {
       RiskService.getRisks()
@@ -222,15 +266,25 @@ export default {
           this.risks = risks;
         })
         .catch(error => {
-          this.hasAlert = true;
+          store.commit("showAlert");
 
-          this.alert = {
+          let alert = {
             message: "An error has occurred",
             description:
               "An error has occurred while trying to retrieve the list of risks",
             type: "danger",
             rawError: error
           };
+
+          store.commit("setAlert", alert);
+          store.commit("showAlert");
+
+          if (store.state.alertTimer !== undefined) {
+            clearTimeout(store.state.alertTimer);
+          }
+
+          let timer = setTimeout(() => store.commit("hideAlert"), 5000);
+          store.commit("setAlertTimer", timer);
         });
     },
     async getRisk() {
@@ -239,16 +293,40 @@ export default {
           this.risk = risk;
         })
         .catch(error => {
-          this.hasAlert = true;
-
-          this.alert = {
+          let alert = {
             message: "An error has occurred",
             description:
               "An error has occurred while trying to retrieve the selected risk",
             type: "danger",
             rawError: error
           };
+
+          store.commit("setAlert", alert);
+          store.commit("showAlert");
+          setTimeout(() => {
+            store.commit("hideAlert");
+            this.resetRisk();
+          }, 5000);
         });
+    },
+    notImplementedAlert() {
+      let alert = {
+        message: "This functionality was not implemented.",
+        description:
+          "Some items are being shown just for the layout composition.",
+        type: "warning",
+        rawError: ""
+      };
+
+      store.commit("setAlert", alert);
+      store.commit("showAlert");
+
+      if (store.state.alertTimer !== undefined) {
+        clearTimeout(store.state.alertTimer);
+      }
+
+      let timer = setTimeout(() => store.commit("hideAlert"), 5000);
+      store.commit("setAlertTimer", timer);
     }
   },
   watch: {
@@ -265,6 +343,12 @@ export default {
       return this.risks.filter(risk => {
         return risk.name.toLowerCase().includes(this.search.toLowerCase());
       });
+    },
+    hasAlert() {
+      return store.state.hasAlert;
+    },
+    alert() {
+      return store.state.alert;
     }
   }
 };
