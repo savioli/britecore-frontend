@@ -2,7 +2,7 @@
   <div class="md:flex">
     <div class="md:w-full">
       <span class="flex-grow flex flex-col mb-1">
-        <span class="text-sm font-medium text-gray-900"
+        <span class="ml-1 text-sm font-medium text-gray-900"
           >{{ name }}
           <span
             v-if="required === true"
@@ -11,7 +11,7 @@
             Required
           </span>
         </span>
-        <span class="text-sm text-gray-500">{{ description }}</span>
+        <span class="ml-1 text-sm text-gray-500">{{ description }}</span>
       </span>
 
       <div class="bg-white rounded-md -space-y-px">

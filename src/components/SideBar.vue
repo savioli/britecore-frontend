@@ -10,7 +10,6 @@
             <svg
               version="1.1"
               viewBox="0 0 177 48"
-              xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
             >
               <defs>
@@ -45,6 +44,7 @@
         </div>
         <div class="flex flex-col w-56"></div>
         <div
+          @click="showNotImplementedYetAlert"
           class="border-l-2 border-gray-200 cursor-pointer border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium"
         >
           Dashboard
@@ -62,6 +62,7 @@
         </div>
 
         <div
+          @click="showNotImplementedYetAlert"
           class="cursor-pointer border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-3 py-2 text-sm font-medium border-l-4"
         >
           Logout
@@ -72,7 +73,38 @@
 </template>
 
 <script>
+import store from "../store/index";
+
 export default {
-  name: "SideBar"
+  name: "SideBar",
+  data() {
+    return {
+      hasAlert: store.state.hasAlert
+    };
+  },
+  methods: {
+    showNotImplementedYetAlert() {
+      let alert = {
+        message: "This functionality was not implemented.",
+        description:
+          "Some items are being shown just for the layout composition.",
+        type: "warning",
+        rawError: ""
+      };
+
+      store.commit("setAlert", alert);
+      store.commit("showAlert");
+
+      if (store.state.alertTimer !== undefined) {
+        clearTimeout(store.state.alertTimer);
+      }
+
+      let timer = setTimeout(() => store.commit("hideAlert"), 2000);
+      store.commit("setAlertTimer", timer);
+    },
+    hideNotImplementedYetAlert() {
+      store.commit("hideAlert");
+    }
+  }
 };
 </script>

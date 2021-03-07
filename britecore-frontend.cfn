@@ -32,34 +32,34 @@ Resources:
     Properties:
       LogGroupName: /docker-compose/britecore-frontend
     Type: AWS::Logs::LogGroup
-  Saviolinetwork3000Ingress:
+  Savioli3000Ingress:
     Properties:
       CidrIp: 0.0.0.0/0
-      Description: vue:3000/tcp on savioli-network network
+      Description: vue:3000/tcp on savioli network
       FromPort: 3000
       GroupId:
-        Ref: SaviolinetworkNetwork
+        Ref: SavioliNetwork
       IpProtocol: TCP
       ToPort: 3000
     Type: AWS::EC2::SecurityGroupIngress
-  SaviolinetworkNetwork:
+  SavioliNetwork:
     Properties:
-      GroupDescription: britecore-frontend Security Group for savioli-network network
+      GroupDescription: britecore-frontend Security Group for savioli network
       Tags:
       - Key: com.docker.compose.project
         Value: britecore-frontend
       - Key: com.docker.compose.network
-        Value: britecore-frontend_savioli-network
+        Value: britecore-frontend_savioli
       VpcId: vpc-0b28b4f187799cf33
     Type: AWS::EC2::SecurityGroup
-  SaviolinetworkNetworkIngress:
+  SavioliNetworkIngress:
     Properties:
-      Description: Allow communication within network savioli-network
+      Description: Allow communication within network savioli
       GroupId:
-        Ref: SaviolinetworkNetwork
+        Ref: SavioliNetwork
       IpProtocol: "-1"
       SourceSecurityGroupId:
-        Ref: SaviolinetworkNetwork
+        Ref: SavioliNetwork
     Type: AWS::EC2::SecurityGroupIngress
   VueService:
     DependsOn:
@@ -85,7 +85,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           SecurityGroups:
-          - Ref: SaviolinetworkNetwork
+          - Ref: SavioliNetwork
           Subnets:
           - subnet-01d78280c1bb31bda
           - subnet-0e653385677af6a6f
@@ -163,8 +163,13 @@ Resources:
       - DependsOn:
         - Condition: SUCCESS
           ContainerName: Vue_ResolvConf_InitContainer
+        Environment:
+        - Name: VUE_APP_API_URL
+          Value: http://localhost:8000/api/v1/
+        - Name: VUE_APP_URL
+          Value: http://localhost:3000
         Essential: true
-        Image: docker.io/savioli/britecore-frontend:latest@sha256:4bb0416ed225e4657619d5523be7550de6fe8187dac7095a6d9bef9240530dec
+        Image: docker.io/savioli/britecore-frontend:latest@sha256:3f41a95177ee7e885c6b7bab94cd646e71d59c93e95e5ddb66ed5a8005ff4dae
         LinuxParameters: {}
         LogConfiguration:
           LogDriver: awslogs

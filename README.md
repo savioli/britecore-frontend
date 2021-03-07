@@ -1,15 +1,15 @@
 # BriteCore FrontEnd
 
 <div>
-  <a href="https://github.com/vuejs/vue">
+  <span>
     <img src="https://img.shields.io/badge/Vue%203-Compliant-20b120.svg">
-  </a> 
-  <a href="https://github.com/eslint/eslint">
+  </span> 
+  <span>
     <img src="https://img.shields.io/badge/lint-ESLint-0044ff.svg">
-  </a>
-  <a href="https://github.com/prettier/prettier">
+  </span>
+  <span>
     <img src="https://img.shields.io/badge/code%20style-Prettier-ff3300.svg">
-  </a>
+  </span>
 </div>
 
 </br>
