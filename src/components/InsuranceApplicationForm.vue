@@ -71,8 +71,7 @@
 
           <div v-if="filteredList.length == 0">
             <div
-              @click="setSelectedRiskId(risk.id)"
-              class="relative border border-gray-200 p-4 flex cursor-pointer hover:bg-gray-50"
+              class="relative border border-gray-200 p-4 flex"
             >
               <div class="ml-0 flex flex-col">
                 <span class="text-sm font-medium text-gray-900">
@@ -115,7 +114,7 @@
               <span
                 class="inline-flex px-4 p-0.5 text-sm font-medium tracking-wider"
               >
-                Select Another Risk
+                Return
               </span>
             </div>
           </div>
@@ -283,7 +282,7 @@ export default {
             clearTimeout(store.state.alertTimer);
           }
 
-          let timer = setTimeout(() => store.commit("hideAlert"), 5000);
+          let timer = setTimeout(() => store.commit("hideAlert"), 2000);
           store.commit("setAlertTimer", timer);
         });
     },
@@ -306,7 +305,7 @@ export default {
           setTimeout(() => {
             store.commit("hideAlert");
             this.resetRisk();
-          }, 5000);
+          }, 2000);
         });
     },
     notImplementedAlert() {
@@ -325,7 +324,7 @@ export default {
         clearTimeout(store.state.alertTimer);
       }
 
-      let timer = setTimeout(() => store.commit("hideAlert"), 5000);
+      let timer = setTimeout(() => store.commit("hideAlert"), 2000);
       store.commit("setAlertTimer", timer);
     }
   },
