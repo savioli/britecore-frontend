@@ -15,6 +15,6 @@ docker context use aws
 
 docker compose -f docker-compose-prod.yaml up
 
-docker compose -f docker-compose-prod.yaml convert > ./britecore-frontend.cfn
+docker compose -f docker-compose-prod.yaml convert > ./deploy/britecore-frontend.cfn
 
 docker compose ps

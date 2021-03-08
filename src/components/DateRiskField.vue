@@ -27,17 +27,14 @@
         <div class="ml-1 text-xs text-red-700">{{ errorMessage }}</div>
       </div>
     </div>
-    <DatePicker
-      v-click-away="onClickAway"
-      v-if="visible"
-      :class="
-        visible == true
-          ? 'z-30 absolute mt-2 border-r border-opacity-50 border-fuchsia-600 rounded-md shadow-md border-gray-400'
-          : 'hidden'
-      "
-      :model-config="modelConfig"
-      v-model="date"
-    />
+    <div v-bind="datePickerStyle">
+      <DatePicker
+        v-click-away="onClickAway"
+        v-if="visible"
+        :model-config="modelConfig"
+        v-model="date"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -91,6 +88,20 @@ export default {
         mask: "YYYY-MM-DD"
       }
     };
+  },
+  computed: {
+    datePickerStyle: function() {
+      if (this.visible) {
+        return {
+          class:
+            "z-30 absolute mt-2 border-r border-opacity-50 border-fuchsia-600 rounded-md shadow-md border-gray-400"
+        };
+      } else {
+        return {
+          class: "hidden"
+        };
+      }
+    }
   }
 };
 </script>
