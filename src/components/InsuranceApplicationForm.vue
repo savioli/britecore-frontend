@@ -3,6 +3,7 @@
     <page-header
       title="Insurance Application Form"
       description="Insurance Application Form for collecting data related to the risk"
+      class="mb-4"
     ></page-header>
 
     <alert
@@ -43,7 +44,7 @@
           </div>
         </div>
 
-        <span v-if="hasAlert" class="flex-grow flex flex-col mb-2">
+        <span class="flex-grow flex flex-col mb-2">
           <span class="text-sm font-medium text-gray-900">Choose a Risk</span>
         </span>
 
@@ -70,9 +71,7 @@
           </div>
 
           <div v-if="filteredList.length == 0">
-            <div
-              class="relative border border-gray-200 p-4 flex"
-            >
+            <div class="relative border border-gray-200 p-4 flex">
               <div class="ml-0 flex flex-col">
                 <span class="text-sm font-medium text-gray-900">
                   Nothing found
@@ -93,8 +92,7 @@
     <template v-else>
       <div class="flex">
         <div
-          v-if="!hasAlert"
-          class="md:flex md:items-center md:justify-between"
+          class="flex items-center justify-between md:flex md:items-center md:justify-between"
         >
           <risk-description
             class="mr-6"
@@ -103,16 +101,13 @@
             :description="risk?.category?.description"
           ></risk-description>
 
-          <div
-            class="mt-1 sm:mb-5 md:mb-0 lg:mb-0 xl:mb-0 2xl:mb-0 mb-5"
-            :class="{ '-ml-0': hasAlert }"
-          >
+          <div class="">
             <div
               @click="resetRisk"
               class="cursor-pointer bg-gray-700 inline-flex items-cente leading-none text-gray-50 rounded-full p-2 shadow text-teal text-sm"
             >
               <span
-                class="inline-flex px-4 p-0.5 text-sm font-medium tracking-wider"
+                class="inline-flex px-4 p-0.5 text-sm font-medium tracking-wider mt-"
               >
                 Return
               </span>
@@ -125,6 +120,11 @@
         <div class="md:flex md:items-center md:justify-between md:space-x-5">
           <div class="flex items-center space-x-5">
             <div>
+              <div class="flex-grow flex flex-col mt-5 mb-0">
+                <span class="ml-1 text-sm font-medium text-gray-600"
+                  >Selected Risk</span
+                >
+              </div>
               <div class="ml-1 text-2xl font-bold text-gray-900">
                 {{ risk?.name }}
               </div>
@@ -282,7 +282,7 @@ export default {
             clearTimeout(store.state.alertTimer);
           }
 
-          let timer = setTimeout(() => store.commit("hideAlert"), 2000);
+          let timer = setTimeout(() => store.commit("hideAlert"), 3000);
           store.commit("setAlertTimer", timer);
         });
     },
@@ -305,7 +305,7 @@ export default {
           setTimeout(() => {
             store.commit("hideAlert");
             this.resetRisk();
-          }, 2000);
+          }, 3000);
         });
     },
     notImplementedAlert() {
@@ -324,7 +324,7 @@ export default {
         clearTimeout(store.state.alertTimer);
       }
 
-      let timer = setTimeout(() => store.commit("hideAlert"), 2000);
+      let timer = setTimeout(() => store.commit("hideAlert"), 3000);
       store.commit("setAlertTimer", timer);
     }
   },

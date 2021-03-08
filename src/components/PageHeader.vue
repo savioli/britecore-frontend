@@ -1,5 +1,5 @@
 <template>
-  <div class="py-6">
+  <div class="pt-4">
     <div class="md:flex md:items-center md:justify-between md:space-x-5">
       <div class="flex items-center space-x-5">
         <div>

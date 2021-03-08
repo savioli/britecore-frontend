@@ -1,5 +1,9 @@
 <template>
-  <div v-bind="alertStyle" class="bg-white border-l-4 p-3" role="alert">
+  <div
+    v-bind="alertStyle"
+    class="fixed z-50 right-6 top-5 bg-white border-l-4 p-3 shadow-sm"
+    role="alert"
+  >
     <div class="font-bold mb-1">{{ message }}</div>
     <div class="text-base font-normal text-gray-500">{{ description }}</div>
   </div>

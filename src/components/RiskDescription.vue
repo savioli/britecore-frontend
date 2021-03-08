@@ -1,10 +1,6 @@
 <template>
   <div>
-    <span class="flex-grow flex flex-col mb-2">
-      <span class="ml-1 text-sm font-medium text-gray-900">{{ title }}</span>
-    </span>
-
-    <div class="ml-0.5 mb-6">
+    <div class="ml-0.5">
       <div
         class="inline-flex items-center bg-white leading-none text-gray-600 rounded-full p-2 shadow text-teal text-sm"
       >
@@ -13,7 +9,7 @@
           >{{ category }}</span
         >
         <span
-          class="ml-1 inline-flex px-2 text-sm font-normal hidden sm:visible md:visible lg:visible xl:visible 2xl:visible mb:visible sm:inline-flex md:inline-flex lg:inline-flex xl:inline-flex 2xl:inline-flex mb:inline-flex"
+          class="ml-1 px-2 text-sm font-normal hidden sm:visible md:visible lg:visible xl:visible 2xl:visible mb:visible sm:inline-flex md:inline-flex lg:inline-flex xl:inline-flex 2xl:inline-flex mb:inline-flex"
           >{{ description }}</span
         >
       </div>
