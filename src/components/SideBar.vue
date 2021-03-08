@@ -99,7 +99,7 @@ export default {
         clearTimeout(store.state.alertTimer);
       }
 
-      let timer = setTimeout(() => store.commit("hideAlert"), 2000);
+      let timer = setTimeout(() => store.commit("hideAlert"), 3000);
       store.commit("setAlertTimer", timer);
     },
     hideNotImplementedYetAlert() {

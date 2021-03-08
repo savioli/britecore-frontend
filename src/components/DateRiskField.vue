@@ -16,8 +16,7 @@
         </span>
 
         <input
-          @focus="displayDatePicker"
-          @click="displayDatePicker"
+          @click="showDatePicker"
           v-model="date"
           class="appearance-none block w-full bg-grey-lighter text-gray-900 border border-grey-lighter rounded py-3 px-4 focus:outline-none focus:border-gray-300 focus:shadow-sm"
           type="text"
@@ -72,19 +71,14 @@ export default {
     }
   },
   methods: {
-    displayDatePicker(e) {
-      this.show(e);
-    },
-    show(e) {
-      e.stopPropagation();
+    showDatePicker() {
       this.visible = true;
     },
-    hide(e) {
-      e.stopPropagation();
+    hideDatePicker() {
       this.visible = false;
     },
-    onClickAway(e) {
-      this.hide(e);
+    onClickAway() {
+      this.hideDatePicker();
     }
   },
   data() {
