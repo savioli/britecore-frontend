@@ -1,0 +1,215 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CloudMap:
+    Properties:
+      Description: Service Map for Docker Compose project britecore-frontend
+      Name: britecore-frontend.local
+      Vpc: vpc-0b28b4f187799cf33
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+  Cluster:
+    Properties:
+      ClusterName: britecore-frontend
+      Tags:
+      - Key: com.docker.compose.project
+        Value: britecore-frontend
+    Type: AWS::ECS::Cluster
+  LoadBalancer:
+    Properties:
+      LoadBalancerAttributes:
+      - Key: load_balancing.cross_zone.enabled
+        Value: "true"
+      Scheme: internet-facing
+      Subnets:
+      - subnet-01d78280c1bb31bda
+      - subnet-0e653385677af6a6f
+      - subnet-05b970c6527a64c25
+      Tags:
+      - Key: com.docker.compose.project
+        Value: britecore-frontend
+      Type: network
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  LogGroup:
+    Properties:
+      LogGroupName: /docker-compose/britecore-frontend
+    Type: AWS::Logs::LogGroup
+  Savioli3000Ingress:
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: vue:3000/tcp on savioli network
+      FromPort: 3000
+      GroupId:
+        Ref: SavioliNetwork
+      IpProtocol: TCP
+      ToPort: 3000
+    Type: AWS::EC2::SecurityGroupIngress
+  SavioliNetwork:
+    Properties:
+      GroupDescription: britecore-frontend Security Group for savioli network
+      Tags:
+      - Key: com.docker.compose.project
+        Value: britecore-frontend
+      - Key: com.docker.compose.network
+        Value: britecore-frontend_savioli
+      VpcId: vpc-0b28b4f187799cf33
+    Type: AWS::EC2::SecurityGroup
+  SavioliNetworkIngress:
+    Properties:
+      Description: Allow communication within network savioli
+      GroupId:
+        Ref: SavioliNetwork
+      IpProtocol: "-1"
+      SourceSecurityGroupId:
+        Ref: SavioliNetwork
+    Type: AWS::EC2::SecurityGroupIngress
+  VueService:
+    DependsOn:
+    - VueTCP3000Listener
+    Properties:
+      Cluster:
+        Fn::GetAtt:
+        - Cluster
+        - Arn
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+      - ContainerName: vue
+        ContainerPort: 3000
+        TargetGroupArn:
+          Ref: VueTCP3000TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          SecurityGroups:
+          - Ref: SavioliNetwork
+          Subnets:
+          - subnet-01d78280c1bb31bda
+          - subnet-0e653385677af6a6f
+          - subnet-05b970c6527a64c25
+      PlatformVersion: 1.4.0
+      PropagateTags: SERVICE
+      SchedulingStrategy: REPLICA
+      ServiceRegistries:
+      - RegistryArn:
+          Fn::GetAtt:
+          - VueServiceDiscoveryEntry
+          - Arn
+      Tags:
+      - Key: com.docker.compose.project
+        Value: britecore-frontend
+      - Key: com.docker.compose.service
+        Value: vue
+      TaskDefinition:
+        Ref: VueTaskDefinition
+    Type: AWS::ECS::Service
+  VueServiceDiscoveryEntry:
+    Properties:
+      Description: '"vue" service discovery entry in Cloud Map'
+      DnsConfig:
+        DnsRecords:
+        - TTL: 60
+          Type: A
+        RoutingPolicy: MULTIVALUE
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+      Name: vue
+      NamespaceId:
+        Ref: CloudMap
+    Type: AWS::ServiceDiscovery::Service
+  VueTCP3000Listener:
+    Properties:
+      DefaultActions:
+      - ForwardConfig:
+          TargetGroups:
+          - TargetGroupArn:
+              Ref: VueTCP3000TargetGroup
+        Type: forward
+      LoadBalancerArn:
+        Ref: LoadBalancer
+      Port: 3000
+      Protocol: TCP
+    Type: AWS::ElasticLoadBalancingV2::Listener
+  VueTCP3000TargetGroup:
+    Properties:
+      Port: 3000
+      Protocol: TCP
+      Tags:
+      - Key: com.docker.compose.project
+        Value: britecore-frontend
+      TargetType: ip
+      VpcId: vpc-0b28b4f187799cf33
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+  VueTaskDefinition:
+    Properties:
+      ContainerDefinitions:
+      - Command:
+        - us-east-2.compute.internal
+        - britecore-frontend.local
+        Essential: false
+        Image: docker/ecs-searchdomain-sidecar:1.0
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: britecore-frontend
+        Name: Vue_ResolvConf_InitContainer
+      - DependsOn:
+        - Condition: SUCCESS
+          ContainerName: Vue_ResolvConf_InitContainer
+        Environment:
+        - Name: VUE_APP_API_URL
+          Value: http://localhost:8000/api/v1/
+        - Name: VUE_APP_URL
+          Value: http://localhost:3000
+        Essential: true
+        Image: docker.io/savioli/britecore-frontend:latest@sha256:9e1acdd2ff8a2e8879cea0ff874fed6ae908fe1389330cae75617823a9c8e01d
+        LinuxParameters: {}
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group:
+              Ref: LogGroup
+            awslogs-region:
+              Ref: AWS::Region
+            awslogs-stream-prefix: britecore-frontend
+        Name: vue
+        PortMappings:
+        - ContainerPort: 3000
+          HostPort: 3000
+          Protocol: tcp
+      Cpu: "256"
+      ExecutionRoleArn:
+        Ref: VueTaskExecutionRole
+      Family: britecore-frontend-vue
+      Memory: "512"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+    Type: AWS::ECS::TaskDefinition
+  VueTaskExecutionRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Condition: {}
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Tags:
+      - Key: com.docker.compose.project
+        Value: britecore-frontend
+      - Key: com.docker.compose.service
+        Value: vue
+    Type: AWS::IAM::Role
