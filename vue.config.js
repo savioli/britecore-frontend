@@ -4,11 +4,9 @@ module.exports = {
     port: 3000
   },
   chainWebpack: config => {
-    config
-        .plugin('html')
-        .tap(args => {
-            args[0].title = "BriteCore FrontEnd";
-            return args;
-        })
+    config.plugin("html").tap(args => {
+      args[0].title = "BriteCore FrontEnd";
+      return args;
+    });
   }
 };
